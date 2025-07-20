@@ -6,6 +6,7 @@ pydantic>=2.6.0
 python-multipart>=0.0.7
 gunicorn>=21.2.0
 pydantic-settings>=2.2.0
+click>=8.0.0
 
 # Production monitoring and system metrics
 psutil>=5.9.0
