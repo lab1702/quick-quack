@@ -1,7 +1,7 @@
 # Multi-stage Docker build for DuckDB Macro REST Server
 # Optimized for production deployment with minimal image size
 
-FROM python:3.11-slim as builder
+FROM python:3.13-slim AS builder
 
 # Install build dependencies
 RUN apt-get update && apt-get install -y \
@@ -22,7 +22,7 @@ RUN pip install --upgrade pip && \
     pip install --no-cache-dir -r requirements.txt
 
 # Production stage
-FROM python:3.11-slim
+FROM python:3.13-slim
 
 # Create non-root user
 RUN groupadd -r appuser && useradd -r -g appuser appuser
