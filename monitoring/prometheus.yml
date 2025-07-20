@@ -1,0 +1,28 @@
+# Prometheus configuration for DuckDB Macro REST Server monitoring
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # DuckDB Macro REST Server metrics
+  - job_name: 'duckdb-macro-rest'
+    static_configs:
+      - targets: ['duckdb-macro-rest:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 30s
+    scrape_timeout: 10s
+
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # System metrics (if node_exporter is added)
+  - job_name: 'node'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 60s

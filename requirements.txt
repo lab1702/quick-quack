@@ -1,0 +1,11 @@
+# Core dependencies for DuckDB Macro REST Server
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+duckdb>=1.3.2
+pydantic>=2.6.0
+python-multipart>=0.0.7
+gunicorn>=21.2.0
+pydantic-settings>=2.2.0
+
+# Production monitoring and system metrics
+psutil>=5.9.0

@@ -1,0 +1,66 @@
+# Development Docker Compose configuration
+version: '3.8'
+
+services:
+  duckdb-macro-rest:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DUCKDB_REST_LOG_LEVEL=INFO
+      - DUCKDB_REST_JSON_LOGGING=true
+      - DUCKDB_REST_ENVIRONMENT=development
+      - DUCKDB_REST_DATABASE_PATH=/app/data/database.duckdb
+    volumes:
+      - ./data:/app/data:ro  # Mount database as read-only
+      - ./logs:/app/logs     # Mount logs directory
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - duckdb-network
+
+  # Optional: Add a monitoring stack
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - duckdb-network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./monitoring/grafana:/etc/grafana/provisioning:ro
+    networks:
+      - duckdb-network
+    profiles:
+      - monitoring
+
+networks:
+  duckdb-network:
+    driver: bridge
+
+volumes:
+  grafana-storage:
